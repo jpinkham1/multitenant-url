@@ -22,6 +22,7 @@ class TenantInterceptor {
         String tenant = getFirstPathElement(request?.requestURI)
         if (!isValid(tenant)) {
             response.sendError 404
+            return false
         }
         Tenant.set(tenant)
         true
