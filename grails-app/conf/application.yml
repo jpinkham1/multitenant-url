@@ -85,5 +85,10 @@ endpoints:
     jmx:
         unique-names: true
 hibernate:
-    session_factory:
-        statement_inspector: multitenant.url.TenantStatementInspector
+# only does executeQuery; doesn't inspect insert/delete/update!
+#    session_factory:
+#        statement_inspector: multitenant.url.TenantStatementInspector
+
+# deprecated but still does the full job
+    ejb:
+        interceptor: multitenant.url.TenantStatementInterceptor
