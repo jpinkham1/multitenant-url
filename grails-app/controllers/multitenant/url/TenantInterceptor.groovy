@@ -45,6 +45,7 @@ class TenantInterceptor {
     }
 
     final Set<String> tenants = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>())
+
     @CompileStatic
     boolean isValid(String tenant) {
         //synchronized (tenants) {   too paranoid
@@ -55,9 +56,11 @@ class TenantInterceptor {
         tenant in tenants
     }
 
+    // TODO: support various dialects
     void buildValidTenants() {
         DatabaseMetaData dmd = sessionFactory.currentSession.connection().getMetaData()
-        ResultSet rs = dmd.getSchemas() ?: dmd.getCatalogs()  // for mysql
+        ResultSet rs = dmd.getCatalogs()  // for mysql  maybe dmd.getSchemas() for others...
+        tenants.clear()
         while (rs.next()) {
             tenants << rs.getString(1)
         }
