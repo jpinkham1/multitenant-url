@@ -63,7 +63,7 @@ bootRun {
 // enable if you wish to package this plugin as a standalone application
 bootRepackage.enabled = false
 grailsPublish {
-    githubSlug = 'foo/bar'
+    githubSlug = 'jpinkham1/multitenant-url'
     license {
         name = 'Apache-2.0'
     }
