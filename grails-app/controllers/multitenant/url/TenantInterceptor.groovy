@@ -56,6 +56,8 @@ class TenantInterceptor {
         tenant in tenants
     }
 
+    Set BUILT_IN = ['guest', 'INFORMATION_SCHEMA', 'sys']
+
     // TODO: support various dialects
     void buildValidTenants() {
         DatabaseMetaData dmd = sessionFactory.currentSession.connection().getMetaData()
@@ -64,5 +66,6 @@ class TenantInterceptor {
         while (rs.next()) {
             tenants << rs.getString(1)
         }
+        tenants.removeAll(BUILT_IN)
     }
 }
