@@ -84,3 +84,6 @@ grails:
 endpoints:
     jmx:
         unique-names: true
+hibernate:
+    session_factory:
+        statement_inspector: multitenant.url.TenantStatementInspector
