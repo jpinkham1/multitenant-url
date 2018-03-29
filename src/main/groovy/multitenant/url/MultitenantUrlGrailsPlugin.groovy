@@ -40,6 +40,8 @@ URL based schema per tenant multitenancy domain objects for SAAS grails3 web app
     def scm = [ url: "https://github.com/jpinkham1/multitenant-url/" ]
 
     Closure doWithSpring() {
+        // This is supposed to work but for some reason it doesn't.
+        // work-around it by copying this into your conf/spring/resources.groovy :(
         def beans = {
             grailsLinkGenerator(TenantLinkGenerator) {}
         }

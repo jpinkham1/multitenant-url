@@ -36,4 +36,28 @@ class UrlMappings {
 
 That's pretty much the idea.  I was happy to see it seems to work, so I wanted to share.
 
-Enjoy!
+# How to use it
+
+If/when I publish this to a repo these steps may change.  Meanwhile:
+
+1. download this project
+1. grails install
+1. reference it in your own project build.gradle
+```groovy
+    compile "org.grails.plugins:multitenant-url:0.1"
+```
+The plugin is supposed to install a TenantLinkGenerator via the plugin's doWithSpring closure, but for some reason it isn't.  
+To work around that, save this as your conf/spring/resources.groovy
+```groovy
+import multitenant.url.TenantLinkGenerator
+
+// Place your Spring DSL code here
+beans = {
+    grailsLinkGenerator(TenantLinkGenerator) {}
+}
+``` 
+(If you skip this step everything still works except scaffolding)
+
+Now just make a domain object and override the table name with 'tenant.' and it will 'just work'.
+
+If you are using a database besides mysql, you may need to manually call TenantInterceptor.tenants.set(yourListOfValidSchemas)
