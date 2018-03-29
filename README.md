@@ -61,3 +61,11 @@ beans = {
 Now just make a domain object and override the table name with 'tenant.' and it will 'just work'.
 
 If you are using a database besides mysql, you may need to manually call TenantInterceptor.tenants.set(yourListOfValidSchemas)
+
+# And now back to the drawing board
+
+Seems there's an addBatch and executeBatch that isn't being passed to the statement inspector.
+Rats.
+Ideas to fix welcome..
+
+pinkhamj@gmail.com
