@@ -56,7 +56,7 @@ class TenantInterceptor {
         tenant in tenants
     }
 
-    Set BUILT_IN = ['guest', 'INFORMATION_SCHEMA', 'sys']
+    Set BUILT_IN = ['guest', 'information_schema', 'sys']
 
     // TODO: support various dialects
     void buildValidTenants() {
@@ -64,7 +64,7 @@ class TenantInterceptor {
         ResultSet rs = dmd.getCatalogs()  // for mysql  maybe dmd.getSchemas() for others...
         tenants.clear()
         while (rs.next()) {
-            tenants << rs.getString(1)
+            tenants << rs.getString(1).toLowerCase()
         }
         tenants.removeAll(BUILT_IN)
     }

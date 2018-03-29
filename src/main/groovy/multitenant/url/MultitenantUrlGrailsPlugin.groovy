@@ -39,12 +39,9 @@ URL based schema per tenant multitenancy domain objects for SAAS grails3 web app
     // Online location of the plugin's browseable source code.
     def scm = [ url: "https://github.com/jpinkham1/multitenant-url/" ]
 
-    Closure doWithSpring() { {->
-            beans = {
-                beans {
-                    grailsLinkGenerator(TenantLinkGenerator) {}
-                }
-            }
+    Closure doWithSpring() {
+        def beans = {
+            grailsLinkGenerator(TenantLinkGenerator) {}
         }
     }
 
