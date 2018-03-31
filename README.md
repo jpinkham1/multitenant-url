@@ -24,15 +24,10 @@ class UrlMappings {
     }
 }
 ```
+* Add a section in BootStrap to call TenantValidationService.buildTenants
 * Make a **TenantInterceptor** that grabs the first path element from the URL and sets it as the tenant.id.  A **Tenant** helper class manages it in a thread local and rejects non-schema values with a 404.
+* When the tenant is valid, it sets up the current connection with a "USE SCHEMA"
 * Use a spring bean **TenantLinkGenerator** to prefix the g:link tags with the current tenant id so that the scaffolding can work.
-* Make sure all multi-tenant domain objects have
-```groovy
-    static mapping = {
-        table name: 'tenant.your_table_name'   // my preference would have been to use schema: 'tenant' but this was simpler
-    }
-```  
-* Install a hibernate session_factory.statement_inspector **TenantStatementInspector** which replaces "tenant." prefixes in SQL with the current tenant id.    
 
 That's pretty much the idea.  I was happy to see it seems to work, so I wanted to share.
 
@@ -58,14 +53,8 @@ beans = {
 ``` 
 (If you skip this step everything still works except scaffolding)
 
-Now just make a domain object and override the table name with 'tenant.' and it will 'just work'.
+If you are using a database besides mysql, you may need to manually call TenantValidatorService.buildTenants(dataSource, 'getCatalogs') instead of the default 'getSchemas' other dialects can use.
 
-If you are using a database besides mysql, you may need to manually call TenantInterceptor.tenants.set(yourListOfValidSchemas)
-
-# And now back to the drawing board
-
-Seems there's an addBatch and executeBatch that isn't being passed to the statement inspector.
-Rats.
-Ideas to fix welcome..
+Enjoy!
 
 pinkhamj@gmail.com

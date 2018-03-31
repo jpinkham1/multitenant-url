@@ -85,10 +85,6 @@ endpoints:
     jmx:
         unique-names: true
 hibernate:
-# only does executeQuery; doesn't inspect insert/delete/update!
-#    session_factory:
-#        statement_inspector: multitenant.url.TenantStatementInspector
-
-# deprecated but still does the full job
-    ejb:
-        interceptor: multitenant.url.TenantStatementInterceptor
+# interceptor pretty much already does open-session-in-view so this would be redundant
+    osiv:
+        enabled: false

@@ -2,13 +2,12 @@ package multitenant.url
 
 import groovy.transform.CompileStatic
 
-import java.sql.DatabaseMetaData
-import java.sql.ResultSet
-import java.util.concurrent.ConcurrentHashMap
+import javax.sql.DataSource
 
 class TenantInterceptor {
 
-    def sessionFactory
+    def tenantValidatorService
+    DataSource dataSource
 
     TenantInterceptor() {
         matchAll()
@@ -20,12 +19,13 @@ class TenantInterceptor {
 
     boolean before() {
         String tenant = getFirstPathElement(request?.requestURI)
-        if (!isValid(tenant)) {
-            response.sendError 404
-            return false
+        if (tenantValidatorService.isValid(tenant)) {
+            tenantValidatorService.setSchema(dataSource, tenant)   // use tenant schema
+            Tenant.set(tenant)
+            return true
         }
-        Tenant.set(tenant)
-        true
+        response.sendError 404
+        return false
     }
 
     void afterView() {
@@ -33,7 +33,7 @@ class TenantInterceptor {
     }
 
     @CompileStatic
-    static String getFirstPathElement(String uri) {
+    String getFirstPathElement(String uri) {
         if (!uri)
             return ''
         int start = uri.indexOf('/')==0 ? 1 : 0
@@ -42,30 +42,5 @@ class TenantInterceptor {
             end = uri.length()
         }
         uri.substring(start, end).replaceAll(/\W/,'')  // to be safe from sql injection
-    }
-
-    final Set<String> tenants = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>())
-
-    @CompileStatic
-    boolean isValid(String tenant) {
-        //synchronized (tenants) {   too paranoid
-            if (!tenants) {
-                buildValidTenants()
-            }
-        //}
-        tenant in tenants
-    }
-
-    Set BUILT_IN = ['guest', 'information_schema', 'sys']
-
-    // TODO: support various dialects
-    void buildValidTenants() {
-        DatabaseMetaData dmd = sessionFactory.currentSession.connection().getMetaData()
-        ResultSet rs = dmd.getCatalogs()  // for mysql  maybe dmd.getSchemas() for others...
-        tenants.clear()
-        while (rs.next()) {
-            tenants << rs.getString(1).toLowerCase()
-        }
-        tenants.removeAll(BUILT_IN)
     }
 }
