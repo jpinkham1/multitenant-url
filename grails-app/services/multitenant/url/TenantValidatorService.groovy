@@ -14,7 +14,7 @@ class TenantValidatorService {
     static transactional = false
     DataSource dataSource
     Sql sql = null
-    String SET_SCHEMA = 'SET SCHEMA ?'
+    String SET_SCHEMA = 'SET SCHEMA %s'
 
     final Set<String> tenants = [] as Set
 
@@ -28,7 +28,7 @@ class TenantValidatorService {
             sql = new Sql(dataSource)
             sql.setCacheStatements(true)
         }
-        sql.execute(SET_SCHEMA, tenant)
+        sql.execute(String.format(SET_SCHEMA, tenant))
         sql
     }
 

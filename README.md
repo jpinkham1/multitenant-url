@@ -58,10 +58,16 @@ If you are using MySql, add this to your BootStrap too
     TenantValidatorService tenantValidatorService
     
     def init = { servletContext ->
-        tenantValidatorService.SET_SCHEMA = 'USE ?'
+        tenantValidatorService.SET_SCHEMA = 'USE %s'
     }
 ```    
 
+# Help Me Answer This Question:
+
+It seems to work for me opening a few browser windows in different tenants, but I'm not really sure.
+How do I know the datasource that's injected into the TenantValidationService is giving the same connection to the sql.execute('SET SCHEMA mytenant') as my scaffolding gets when it (later) calls getSession?
+Seems like there would be a better way if I could figure out how to subclass the datasource being used, I could make it set the tenant on EVERY getConnection. 
+Maybe I'll write a multithreaded spec test next..
 
 Enjoy!
 
