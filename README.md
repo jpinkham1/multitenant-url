@@ -53,12 +53,12 @@ beans = {
 ``` 
 (If you skip this step everything still works except scaffolding)
 
-If you are using MySql, add this to your BootStrap
+If you are using MySql, add this to your BootStrap too
 ```groovy
     TenantValidatorService tenantValidatorService
     
     def init = { servletContext ->
-        tenantValidatorService.SET_SCHEMA = 'USE'
+        tenantValidatorService.SET_SCHEMA = 'USE ?'
     }
 ```    
 
