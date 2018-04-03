@@ -7,7 +7,6 @@ import javax.sql.DataSource
 class TenantInterceptor {
 
     def tenantValidatorService
-    DataSource dataSource
 
     TenantInterceptor() {
         matchAll()
@@ -20,7 +19,7 @@ class TenantInterceptor {
     boolean before() {
         String tenant = getFirstPathElement(request?.requestURI)
         if (tenantValidatorService.isValid(tenant)) {
-            tenantValidatorService.setSchema(dataSource, tenant)   // use tenant schema
+            tenantValidatorService.setSchema(tenant)   // use tenant schema
             Tenant.set(tenant)
             return true
         }
