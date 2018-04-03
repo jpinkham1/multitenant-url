@@ -24,7 +24,7 @@ class UrlMappings {
     }
 }
 ```
-* Add a section in BootStrap to call TenantValidationService.buildTenants
+* BootStrap calls TenantValidationService.buildTenants
 * Make a **TenantInterceptor** that grabs the first path element from the URL and sets it as the tenant.id.  A **Tenant** helper class manages it in a thread local and rejects non-schema values with a 404.
 * When the tenant is valid, it sets up the current connection with a "USE SCHEMA"
 * Use a spring bean **TenantLinkGenerator** to prefix the g:link tags with the current tenant id so that the scaffolding can work.
@@ -52,6 +52,16 @@ beans = {
 }
 ``` 
 (If you skip this step everything still works except scaffolding)
+
+If you are using MySql, add this to your BootStrap
+```groovy
+    TenantValidatorService tenantValidatorService
+    
+    def init = { servletContext ->
+        tenantValidatorService.SET_SCHEMA = 'USE'
+    }
+```    
+
 
 Enjoy!
 
