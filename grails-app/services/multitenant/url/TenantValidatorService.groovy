@@ -7,34 +7,43 @@ import groovy.transform.CompileStatic
 import javax.sql.DataSource
 import java.sql.DatabaseMetaData
 import java.sql.ResultSet
-import java.util.concurrent.ConcurrentHashMap
 
 @CompileStatic
 class TenantValidatorService {
+    @SuppressWarnings("GroovyUnusedDeclaration")
     static transactional = false
+    DataSource dataSource
+    Sql sql = null
 
-    final Set<String> tenants = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>())
+    final Set<String> tenants = [] as Set
 
     boolean isValid(String tenant) {
         tenant in tenants
     }
 
-    void setSchema(DataSource dataSource, String tenant) {
-        new Sql(dataSource).execute(String.format('SET SCHEMA %s',tenant))
+    // also return the sql so we can keep executing for sure on the same schema
+    Sql setSchema(String tenant) {
+        if (!sql) {
+            sql = new Sql(dataSource)
+            sql.setCacheStatements(true)
+        }
+        sql.execute("SET SCHEMA ${tenant}")
+        sql
     }
 
     Set BUILT_IN = ['guest', 'information_schema', 'sys', 'public'] as Set
 
-    // BootStrap calls this at startup
-    // TODO: support various dialects
+    // BootStrap should call this at startup
     @CompileDynamic
-    void buildValidTenants(DataSource dataSource, String getSchemasMethodName='getSchemas') {
+    void buildValidTenants() {
         DatabaseMetaData dmd = dataSource.connection?.getMetaData()
-        //ResultSet rs = dmd?.getCatalogs()  // for mysql
-        ResultSet rs = dmd?."${getSchemasMethodName}"() // for H2 and others...
+
         tenants.clear()
-        while (rs?.next()) {
-            tenants << rs.getString(1).toLowerCase()
+        ['getSchemas', 'getCatalogs'].each { cmd->
+            ResultSet rs = dmd?."${cmd}"()
+            while (rs?.next()) {
+                tenants << rs.getString(1).toLowerCase()
+            }
         }
         tenants.removeAll(BUILT_IN)
     }

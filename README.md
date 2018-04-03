@@ -53,8 +53,6 @@ beans = {
 ``` 
 (If you skip this step everything still works except scaffolding)
 
-If you are using a database besides mysql, you may need to manually call TenantValidatorService.buildTenants(dataSource, 'getCatalogs') instead of the default 'getSchemas' other dialects can use.
-
 Enjoy!
 
 pinkhamj@gmail.com
